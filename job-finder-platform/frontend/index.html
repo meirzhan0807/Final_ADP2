@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>JobFinder KZ — Жұмыс іздеу платформасы</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f0f4ff;
+  --bg2:#e8eeff;
+  --card:#ffffff;
+  --card2:#f7f9ff;
+  --border:#dde3f5;
+  --border2:#c8d0ef;
+  --accent:#4f6ef7;
+  --accent-dark:#3a57e8;
+  --accent-light:#eef1fe;
+  --green:#16a77a;
+  --green-bg:#e8f8f3;
+  --orange:#f07d2a;
+  --orange-bg:#fff0e6;
+  --red:#e53e3e;
+  --red-bg:#fff0f0;
+  --purple:#7c5cbf;
+  --purple-bg:#f3eeff;
+  --text:#1a1f36;
+  --text2:#4a5176;
+  --muted:#8890b0;
+  --white:#ffffff;
+  --shadow:0 2px 12px rgba(79,110,247,0.10);
+  --shadow-lg:0 8px 32px rgba(79,110,247,0.15);
+  --radius:14px;
+  --radius-sm:8px;
+}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(240,244,255,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);height:64px;display:flex;align-items:center;padding:0 2rem;gap:1.5rem}
+.logo{font-weight:800;font-size:1.3rem;color:var(--accent);letter-spacing:-0.5px;text-decoration:none;flex-shrink:0}
+.logo span{color:var(--text)}
+.nav-center{flex:1;display:flex;justify-content:center;gap:0.25rem}
+.nav-link{padding:0.45rem 0.9rem;border-radius:var(--radius-sm);font-size:0.875rem;font-weight:500;color:var(--text2);cursor:pointer;border:none;background:none;transition:all 0.18s;font-family:'Plus Jakarta Sans',sans-serif}
+.nav-link:hover,.nav-link.active{background:var(--accent-light);color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:0.6rem}
+.btn{padding:0.5rem 1.1rem;border-radius:var(--radius-sm);font-size:0.875rem;font-weight:600;cursor:pointer;transition:all 0.18s;font-family:'Plus Jakarta Sans',sans-serif;border:none}
+.btn-ghost{background:none;border:1.5px solid var(--border2);color:var(--text2)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-dark);transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.btn-primary:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.btn-danger{background:var(--red-bg);color:var(--red);border:1.5px solid #fcc}
+.btn-danger:hover{background:#ffe0e0}
+.btn-green{background:var(--green-bg);color:var(--green);border:1.5px solid #b2e8d8}
+.btn-green:hover{background:#d4f2e8}
+.nav-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#7c8ff7);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;color:#fff;cursor:pointer;flex-shrink:0;border:2px solid var(--border)}
+#nav-user{display:none;align-items:center;gap:0.5rem}
+.notif-btn{position:relative;padding:0.45rem 0.75rem}
+#notif-badge{display:none;position:absolute;top:2px;right:2px;width:9px;height:9px;background:var(--red);border-radius:50%;border:2px solid var(--bg)}
+
+/* ── PAGES ── */
+.page{display:none;padding-top:64px;min-height:100vh}
+.page.active{display:block}
+
+/* ═══════════════════════════════════
+   HOME PAGE
+═══════════════════════════════════ */
+.hero{background:linear-gradient(160deg,#e8eeff 0%,#f0f4ff 60%,#eef0ff 100%);padding:4rem 2rem 3rem;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(79,110,247,0.08) 0%,transparent 70%);border-radius:50%}
+.hero::after{content:'';position:absolute;bottom:-60px;left:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(124,92,191,0.07) 0%,transparent 70%);border-radius:50%}
+.hero-inner{max-width:740px;margin:0 auto;position:relative;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:var(--white);border:1.5px solid var(--border);border-radius:100px;padding:0.4rem 1rem;font-size:0.8rem;font-weight:600;color:var(--accent);margin-bottom:1.75rem;box-shadow:var(--shadow)}
+.pulse{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+h1{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;line-height:1.1;letter-spacing:-1.5px;color:var(--text);margin-bottom:1.25rem}
+h1 .hl{color:var(--accent)}
+.hero-sub{font-size:1.05rem;color:var(--text2);line-height:1.7;max-width:520px;margin:0 auto 2.25rem}
+.hero-btns{display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem}
+.btn-lg{padding:0.8rem 2rem;font-size:1rem;border-radius:10px}
+
+/* SEARCH */
+.search-box{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:0.75rem;display:flex;gap:0.6rem;max-width:760px;margin:0 auto;box-shadow:var(--shadow-lg)}
+.search-box:focus-within{border-color:var(--accent)}
+.search-input{flex:1;background:none;border:none;outline:none;font-size:0.95rem;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;padding:0.3rem 0.5rem}
+.search-input::placeholder{color:var(--muted)}
+.search-select{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:0.4rem 0.7rem;font-size:0.85rem;font-family:'Plus Jakarta Sans',sans-serif;outline:none;cursor:pointer}
+.search-select:focus{border-color:var(--accent)}
+.search-btn{background:var(--accent);border:none;border-radius:10px;color:#fff;padding:0.6rem 1.5rem;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all 0.18s;white-space:nowrap}
+.search-btn:hover{background:var(--accent-dark)}
+
+/* STATS */
+.stats-row{display:flex;justify-content:center;gap:1rem;padding:2.5rem 2rem;flex-wrap:wrap;max-width:900px;margin:0 auto}
+.stat-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.5rem 2rem;text-align:center;flex:1;min-width:180px;box-shadow:var(--shadow)}
+.stat-num{font-size:2rem;font-weight:800;color:var(--accent);letter-spacing:-1px}
+.stat-lbl{font-size:0.82rem;color:var(--muted);margin-top:0.3rem;font-weight:500}
+
+/* CATEGORIES */
+.section{max-width:1100px;margin:0 auto;padding:0 2rem 3rem}
+.section-title{font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:1.25rem;letter-spacing:-0.3px}
+.cats{display:flex;flex-wrap:wrap;gap:0.6rem}
+.cat-chip{padding:0.5rem 1.1rem;background:var(--white);border:1.5px solid var(--border);border-radius:100px;font-size:0.85rem;font-weight:500;color:var(--text2);cursor:pointer;transition:all 0.18s}
+.cat-chip:hover,.cat-chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* ═══════════════════════════════════
+   JOBS PAGE
+═══════════════════════════════════ */
+.page-wrap{max-width:1100px;margin:0 auto;padding:2rem}
+.page-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:gap;gap:1rem}
+.page-heading{font-size:1.5rem;font-weight:700;letter-spacing:-0.5px}
+.filter-bar{display:flex;gap:0.6rem;flex-wrap:wrap}
+.filter-input{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:0.5rem 0.9rem;font-size:0.875rem;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);outline:none;transition:border-color 0.18s}
+.filter-input:focus{border-color:var(--accent)}
+.jobs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:1rem}
+
+/* JOB CARD */
+.job-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;cursor:pointer;transition:all 0.2s;position:relative}
+.job-card:hover{border-color:var(--accent);box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.jc-top{display:flex;align-items:flex-start;gap:0.75rem;margin-bottom:1rem}
+.jc-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;flex-shrink:0}
+.jc-meta{flex:1}
+.jc-company{font-size:0.78rem;color:var(--muted);font-weight:500;margin-bottom:0.2rem}
+.jc-title{font-size:1rem;font-weight:700;color:var(--text);line-height:1.3}
+.jc-tags{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.85rem}
+.tag{padding:0.22rem 0.65rem;border-radius:100px;font-size:0.72rem;font-weight:600}
+.tag-blue{background:var(--accent-light);color:var(--accent)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.tag-orange{background:var(--orange-bg);color:var(--orange)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.jc-salary{font-size:0.95rem;font-weight:700;color:var(--green);margin-bottom:0.85rem}
+.jc-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:0.85rem;border-top:1px solid var(--border)}
+.jc-date{font-size:0.75rem;color:var(--muted)}
+.apply-btn{padding:0.35rem 0.9rem;background:var(--accent);border:none;border-radius:6px;color:#fff;font-size:0.78rem;font-weight:600;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:background 0.18s}
+.apply-btn:hover{background:var(--accent-dark)}
+
+/* ═══════════════════════════════════
+   MODALS
+═══════════════════════════════════ */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(26,31,54,0.45);backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center;padding:1rem}
+.modal-bg.open{display:flex}
+.modal{background:var(--white);border:1.5px solid var(--border);border-radius:20px;padding:2.25rem;width:100%;max-width:440px;position:relative;box-shadow:0 24px 80px rgba(79,110,247,0.18);animation:mUp 0.25s ease}
+.modal-wide{max-width:580px}
+@keyframes mUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.modal-x{position:absolute;top:1rem;right:1rem;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;color:var(--text2);transition:all 0.18s}
+.modal-x:hover{border-color:var(--accent);color:var(--accent)}
+.modal-title{font-size:1.4rem;font-weight:800;color:var(--text);margin-bottom:0.35rem;letter-spacing:-0.5px}
+.modal-sub{font-size:0.875rem;color:var(--muted);margin-bottom:1.75rem}
+
+/* FORMS */
+.fg{margin-bottom:1rem}
+.fg label{display:block;font-size:0.78rem;font-weight:600;color:var(--text2);margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:0.4px}
+.fi{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:0.65rem 0.9rem;color:var(--text);font-size:0.9rem;font-family:'Plus Jakarta Sans',sans-serif;outline:none;transition:border-color 0.18s}
+.fi:focus{border-color:var(--accent);background:var(--white)}
+.fi.error{border-color:var(--red)}
+textarea.fi{resize:vertical;min-height:90px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+.btn-block{width:100%;padding:0.75rem;font-size:0.95rem;border-radius:var(--radius-sm);margin-top:0.25rem}
+
+/* ROLE TABS */
+.role-tabs{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1.25rem}
+.role-tab{padding:0.65rem;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.875rem;font-weight:600;cursor:pointer;transition:all 0.18s;text-align:center}
+.role-tab.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+.modal-switch{text-align:center;margin-top:1.1rem;font-size:0.875rem;color:var(--muted)}
+.modal-switch a{color:var(--accent);cursor:pointer;font-weight:600}
+
+/* ALERT */
+.alert{padding:0.7rem 1rem;border-radius:var(--radius-sm);font-size:0.85rem;margin-bottom:1rem;display:none;font-weight:500}
+.alert.show{display:block}
+.alert-err{background:#fff0f0;border:1.5px solid #fcc;color:var(--red)}
+.alert-ok{background:var(--green-bg);border:1.5px solid #b2e8d8;color:var(--green)}
+
+/* ═══════════════════════════════════
+   PROFILE PAGE
+═══════════════════════════════════ */
+.profile-wrap{max-width:780px;margin:0 auto;padding:2rem}
+.profile-hero{background:linear-gradient(135deg,var(--accent-light),var(--bg2));border:1.5px solid var(--border);border-radius:20px;padding:2rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1.5rem}
+.p-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#7c8ff7);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:800;color:#fff;flex-shrink:0;border:3px solid var(--white);box-shadow:var(--shadow)}
+.p-info h2{font-size:1.35rem;font-weight:800;letter-spacing:-0.3px}
+.p-info p{color:var(--muted);font-size:0.875rem;margin-top:0.25rem}
+.p-role{display:inline-block;margin-top:0.5rem;padding:0.25rem 0.75rem;background:var(--accent-light);border:1.5px solid var(--border);border-radius:100px;font-size:0.75rem;font-weight:600;color:var(--accent)}
+.sec-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.75rem;margin-bottom:1rem}
+.sec-head{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:1.25rem;display:flex;align-items:center;gap:0.6rem}
+.sec-head::before{content:'';display:block;width:4px;height:18px;background:var(--accent);border-radius:2px}
+
+/* ═══════════════════════════════════
+   EMPLOYER PAGE
+═══════════════════════════════════ */
+.emp-wrap{max-width:900px;margin:0 auto;padding:2rem}
+.emp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.75rem}
+.emp-top h2{font-size:1.5rem;font-weight:800;letter-spacing:-0.5px}
+.post-form{background:var(--white);border:1.5px solid var(--accent);border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem;display:none;animation:mUp 0.25s ease}
+.post-form.open{display:block}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.emp-job{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:1rem;transition:border-color 0.18s}
+.emp-job:hover{border-color:var(--accent)}
+.emp-job-info{flex:1}
+.emp-job-info h4{font-size:0.95rem;font-weight:700}
+.emp-job-info p{font-size:0.78rem;color:var(--muted);margin-top:0.2rem}
+.emp-actions{display:flex;gap:0.5rem}
+.btn-sm{padding:0.32rem 0.8rem;border-radius:6px;font-size:0.78rem;font-weight:600;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:all 0.18s}
+
+/* ═══════════════════════════════════
+   NOTIFICATIONS PAGE
+═══════════════════════════════════ */
+.notif-wrap{max-width:700px;margin:0 auto;padding:2rem}
+.notif-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
+.notif-top h2{font-size:1.5rem;font-weight:800}
+.notif-item{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.4rem;margin-bottom:0.6rem;display:flex;align-items:flex-start;gap:0.9rem;cursor:pointer;transition:all 0.18s}
+.notif-item:hover{border-color:var(--accent)}
+.notif-item.unread{border-left:3px solid var(--accent);background:var(--accent-light)}
+.ndot{width:9px;height:9px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:5px}
+.notif-body{flex:1}
+.notif-body h4{font-size:0.88rem;font-weight:700;margin-bottom:0.2rem}
+.notif-body p{font-size:0.8rem;color:var(--text2)}
+.notif-time{font-size:0.73rem;color:var(--muted);flex-shrink:0}
+
+/* APPLICATION ITEMS */
+.app-item{background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:1rem 1.25rem;margin-bottom:0.6rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.app-item h4{font-size:0.9rem;font-weight:600}
+.app-item p{font-size:0.75rem;color:var(--muted);margin-top:0.2rem}
+.status-badge{padding:0.28rem 0.75rem;border-radius:100px;font-size:0.73rem;font-weight:700}
+.s-pending{background:var(--orange-bg);color:var(--orange)}
+.s-accepted{background:var(--green-bg);color:var(--green)}
+.s-rejected{background:var(--red-bg);color:var(--red)}
+.s-reviewed{background:var(--accent-light);color:var(--accent)}
+
+/* LOADING / EMPTY */
+.loading{text-align:center;padding:3rem;color:var(--muted)}
+.empty{text-align:center;padding:4rem 2rem;color:var(--muted)}
+.empty-icon{font-size:2.5rem;margin-bottom:0.75rem;opacity:0.4}
+.empty h3{font-size:1rem;font-weight:700;color:var(--text2);margin-bottom:0.4rem}
+.spinner{display:inline-block;width:20px;height:20px;border:2.5px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:0.4rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* TOAST */
+#toast-wrap{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:0.5rem;pointer-events:none}
+.toast{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:0.8rem 1.2rem;font-size:0.85rem;font-weight:600;box-shadow:var(--shadow-lg);animation:tIn 0.3s ease;display:flex;align-items:center;gap:0.5rem;max-width:320px;pointer-events:auto}
+.toast.t-ok{border-left:3px solid var(--green)}
+.toast.t-err{border-left:3px solid var(--red)}
+@keyframes tIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+
+/* DETAIL MODAL */
+.detail-header{margin-bottom:1.25rem}
+.detail-title{font-size:1.3rem;font-weight:800;letter-spacing:-0.3px;margin-bottom:0.6rem}
+.detail-meta{display:flex;flex-wrap:wrap;gap:0.75rem;font-size:0.82rem;color:var(--muted);margin-bottom:0.85rem}
+.detail-salary{font-size:1.15rem;font-weight:700;color:var(--green);margin-bottom:1.25rem}
+.detail-desc{font-size:0.88rem;line-height:1.75;color:var(--text2);white-space:pre-wrap;margin-bottom:1.5rem;max-height:220px;overflow-y:auto}
+.divider{height:1px;background:var(--border);margin:1.25rem 0}
+
+/* ICON COLORS */
+.ic-blue{background:#eef1fe;color:var(--accent)}
+.ic-green{background:var(--green-bg);color:var(--green)}
+.ic-orange{background:var(--orange-bg);color:var(--orange)}
+.ic-purple{background:var(--purple-bg);color:var(--purple)}
+
+@media(max-width:640px){
+  nav{padding:0 1rem}.hero{padding:3rem 1rem 2rem}
+  h1{font-size:2rem}.search-box{flex-direction:column}
+  .frow,.form-grid{grid-template-columns:1fr}
+  .jobs-grid{grid-template-columns:1fr}.stats-row{flex-direction:column}
+  .page-top{flex-direction:column;align-items:flex-start}
+  .emp-top{flex-direction:column;align-items:flex-start;gap:0.75rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ════ NAV ════ -->
+<nav>
+  <div class="logo">Job<span>Finder</span></div>
+  <div class="nav-center">
+    <button class="nav-link" onclick="showPage('home')">Басты бет</button>
+    <button class="nav-link" onclick="showPage('jobs')">Жұмыстар</button>
+  </div>
+  <div class="nav-right">
+    <div id="nav-guest" style="display:flex;gap:0.5rem">
+      <button class="btn btn-ghost" onclick="openAuth('login')">Кіру</button>
+      <button class="btn btn-primary" onclick="openAuth('register')">Тіркелу</button>
+    </div>
+    <div id="nav-user" style="display:none;align-items:center;gap:0.5rem">
+      <button class="nav-link notif-btn" onclick="showPage('notifications')">
+        🔔 <span id="notif-badge"></span>
+      </button>
+      <button class="nav-link" id="nav-emp-btn" style="display:none" onclick="showPage('employer')">Менің жұмыстарым</button>
+      <div class="nav-avatar" id="nav-av" onclick="showPage('profile')" title="Профиль">?</div>
+      <button class="btn btn-ghost" onclick="doLogout()" style="padding:0.4rem 0.75rem">Шығу</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ════ HOME ════ -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge"><div class="pulse"></div> Қазақстандағы №1 жұмыс платформасы</div>
+      <h1>Арман <span class="hl">жұмысыңды</span><br/>қазір тап</h1>
+      <p class="hero-sub">Мыңдаған жұмыс берушілер сізді күтуде. Тіркеліңіз және бүгін өтініш беріңіз.</p>
+      <div class="hero-btns">
+        <button class="btn btn-primary btn-lg" onclick="showPage('jobs')">Жұмыстарды қарау →</button>
+        <button class="btn btn-ghost btn-lg" onclick="openAuth('register')">Жұмыс жариялау</button>
+      </div>
+      <div class="search-box">
+        <span style="padding:0.3rem 0.5rem;color:var(--muted);font-size:1.1rem">🔍</span>
+        <input class="search-input" id="h-q" placeholder="Жұмыс атауы, технология..."/>
+        <select class="search-select" id="h-loc">
+          <option value="">Барлық қала</option>
+          <option>Алматы</option><option>Астана</option>
+          <option>Шымкент</option><option>Remote</option>
+        </select>
+        <select class="search-select" id="h-type">
+          <option value="">Кез келген</option>
+          <option value="full-time">Full-time</option>
+          <option value="part-time">Part-time</option>
+          <option value="remote">Remote</option>
+        </select>
+        <button class="search-btn" onclick="doSearch()">Іздеу</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" id="stat-total">—</div><div class="stat-lbl">Белсенді жұмыстар</div></div>
+    <div class="stat-card"><div class="stat-num">3</div><div class="stat-lbl">Микросервис</div></div>
+    <div class="stat-card"><div class="stat-num">36</div><div class="stat-lbl">gRPC Endpoint</div></div>
+    <div class="stat-card"><div class="stat-num">NATS</div><div class="stat-lbl">Message Queue</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Категориялар бойынша іздеу</div>
+    <div class="cats" id="cats-list">
+      <div class="loading"><span class="spinner"></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ JOBS ════ -->
+<div class="page" id="page-jobs">
+  <div class="page-wrap">
+    <div class="page-top">
+      <div class="page-heading">Жұмыс тізімі <span id="jobs-count" style="font-size:0.9rem;color:var(--muted);font-weight:400"></span></div>
+      <div class="filter-bar">
+        <input class="filter-input" id="fq" placeholder="Іздеу..." oninput="filterJobs()" style="width:180px"/>
+        <select class="filter-input" id="ftype" onchange="filterJobs()">
+          <option value="">Барлық түр</option>
+          <option value="full-time">Full-time</option>
+          <option value="part-time">Part-time</option>
+          <option value="remote">Remote</option>
+          <option value="contract">Contract</option>
+        </select>
+        <select class="filter-input" id="flevel" onchange="filterJobs()">
+          <option value="">Барлық деңгей</option>
+          <option value="junior">Junior</option>
+          <option value="middle">Middle</option>
+          <option value="senior">Senior</option>
+          <option value="lead">Lead</option>
+        </select>
+      </div>
+    </div>
+    <div class="jobs-grid" id="jobs-grid">
+      <div class="loading"><span class="spinner"></span> Жүктелуде...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ PROFILE ════ -->
+<div class="page" id="page-profile">
+  <div class="profile-wrap">
+    <div class="profile-hero">
+      <div class="p-avatar" id="pav">?</div>
+      <div class="p-info">
+        <h2 id="p-name">—</h2>
+        <p id="p-email">—</p>
+        <div class="p-role" id="p-role">—</div>
+      </div>
+    </div>
+
+    <div class="sec-card">
+      <div class="sec-head">Жеке ақпарат</div>
+      <div class="frow">
+        <div class="fg"><label>Аты</label><input class="fi" id="e-fn" placeholder="Аты"/></div>
+        <div class="fg"><label>Тегі</label><input class="fi" id="e-ln" placeholder="Тегі"/></div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="saveBasic()">Сақтау</button>
+    </div>
+
+    <div class="sec-card">
+      <div class="sec-head">Профиль мәліметтері</div>
+      <div class="fg"><label>Биография</label><textarea class="fi" id="e-bio" placeholder="Өзіңіз туралы жазыңыз..."></textarea></div>
+      <div class="fg"><label>Дағдылар (үтірмен бөліңіз)</label><input class="fi" id="e-skills" placeholder="Go, Docker, PostgreSQL..."/></div>
+      <div class="frow">
+        <div class="fg"><label>Қала</label><input class="fi" id="e-loc" placeholder="Алматы"/></div>
+        <div class="fg"><label>Телефон</label><input class="fi" id="e-phone" placeholder="+7 700 000 0000"/></div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="saveProfile()">Сақтау</button>
+    </div>
+
+    <div class="sec-card">
+      <div class="sec-head">Менің өтініштерім</div>
+      <div id="my-apps"><div class="loading"><span class="spinner"></span></div></div>
+    </div>
+
+    <div class="sec-card">
+      <div class="sec-head">Құпия сөзді өзгерту</div>
+      <div class="fg"><label>Ескі құпия сөз</label><input class="fi" type="password" id="op" placeholder="••••••••"/></div>
+      <div class="frow">
+        <div class="fg"><label>Жаңа</label><input class="fi" type="password" id="np" placeholder="••••••••"/></div>
+        <div class="fg"><label>Қайтала</label><input class="fi" type="password" id="np2" placeholder="••••••••"/></div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="savePass()">Өзгерту</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ EMPLOYER ════ -->
+<div class="page" id="page-employer">
+  <div class="emp-wrap">
+    <div class="emp-top">
+      <h2>Менің жариялауларым</h2>
+      <button class="btn btn-primary" onclick="togglePF()">+ Жаңа жұмыс</button>
+    </div>
+
+    <div class="post-form" id="post-form">
+      <div class="sec-head" style="margin-bottom:1.25rem">Жаңа жұмыс жариялау</div>
+      <div class="fg"><label>Жұмыс атауы *</label><input class="fi" id="pj-title" placeholder="Мысалы: Senior Go Developer"/></div>
+      <div class="fg"><label>Сипаттама *</label><textarea class="fi" id="pj-desc" placeholder="Жұмыс міндеттері, талаптар..."></textarea></div>
+      <div class="form-grid">
+        <div class="fg"><label>Қала *</label><input class="fi" id="pj-loc" placeholder="Алматы"/></div>
+        <div class="fg"><label>Жұмыс түрі</label>
+          <select class="fi" id="pj-type"><option value="full-time">Full-time</option><option value="part-time">Part-time</option><option value="remote">Remote</option><option value="contract">Contract</option></select>
+        </div>
+        <div class="fg"><label>Категория</label><input class="fi" id="pj-cat" placeholder="Technology"/></div>
+        <div class="fg"><label>Тәжірибе деңгейі</label>
+          <select class="fi" id="pj-exp"><option value="junior">Junior</option><option value="middle">Middle</option><option value="senior">Senior</option><option value="lead">Lead</option></select>
+        </div>
+        <div class="fg"><label>Мин. жалақы (₸)</label><input class="fi" type="number" id="pj-smin" placeholder="200000"/></div>
+        <div class="fg"><label>Макс. жалақы (₸)</label><input class="fi" type="number" id="pj-smax" placeholder="400000"/></div>
+      </div>
+      <div style="display:flex;gap:0.75rem;margin-top:0.5rem">
+        <button class="btn btn-primary" style="flex:1;padding:0.7rem" onclick="postJob()">Жариялау</button>
+        <button class="btn btn-ghost" style="padding:0.7rem 1.25rem" onclick="togglePF()">Бас тарту</button>
+      </div>
+    </div>
+
+    <div id="emp-jobs"><div class="loading"><span class="spinner"></span></div></div>
+  </div>
+</div>
+
+<!-- ════ NOTIFICATIONS ════ -->
+<div class="page" id="page-notifications">
+  <div class="notif-wrap">
+    <div class="notif-top">
+      <h2>Хабарламалар</h2>
+      <button class="btn btn-ghost" style="font-size:0.82rem;padding:0.4rem 0.9rem" onclick="markAll()">Барлығын оқылды деп белгіле</button>
+    </div>
+    <div id="notif-list"><div class="loading"><span class="spinner"></span></div></div>
+  </div>
+</div>
+
+<!-- ════ AUTH MODAL ════ -->
+<div class="modal-bg" id="m-auth">
+  <div class="modal">
+    <div class="modal-x" onclick="closeM('auth')">✕</div>
+
+    <!-- LOGIN -->
+    <div id="f-login">
+      <div class="modal-title">Қош келдіңіз 👋</div>
+      <div class="modal-sub">Аккаунтыңызға кіріңіз</div>
+      <div class="alert alert-err" id="lerr"></div>
+      <div class="fg"><label>Email</label><input class="fi" type="email" id="l-em" placeholder="email@example.com"/></div>
+      <div class="fg"><label>Құпия сөз</label><input class="fi" type="password" id="l-pw" placeholder="Кемінде 8 таңба" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+      <button class="btn btn-primary btn-block" id="l-btn" onclick="doLogin()">Кіру</button>
+      <div class="modal-switch">Аккаунт жоқ па? <a onclick="sw('register')">Тіркелу</a></div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="f-reg" style="display:none">
+      <div class="modal-title">Тіркелу ✨</div>
+      <div class="modal-sub">Жаңа аккаунт жасаңыз</div>
+      <div class="alert alert-err" id="rerr"></div>
+      <div class="role-tabs">
+        <button class="role-tab active" id="rt-js" onclick="setRole('jobseeker')">👤 Жұмыс іздеуші</button>
+        <button class="role-tab" id="rt-em" onclick="setRole('employer')">🏢 Жұмыс беруші</button>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>Аты *</label><input class="fi" id="r-fn" placeholder="Алмас"/></div>
+        <div class="fg"><label>Тегі *</label><input class="fi" id="r-ln" placeholder="Бек"/></div>
+      </div>
+      <div class="fg"><label>Email *</label><input class="fi" type="email" id="r-em" placeholder="email@example.com"/></div>
+      <div class="fg"><label>Құпия сөз * (кемінде 8 таңба)</label><input class="fi" type="password" id="r-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doReg()"/></div>
+      <button class="btn btn-primary btn-block" id="r-btn" onclick="doReg()">Тіркелу</button>
+      <div class="modal-switch">Аккаунт бар ма? <a onclick="sw('login')">Кіру</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ JOB DETAIL MODAL ════ -->
+<div class="modal-bg" id="m-job">
+  <div class="modal modal-wide">
+    <div class="modal-x" onclick="closeM('job')">✕</div>
+    <div id="job-detail"></div>
+  </div>
+</div>
+
+<!-- ════ TOAST ════ -->
+<div id="toast-wrap"></div>
+
+<script>
+const API = 'http://localhost:8080/api/v1';
+let token = localStorage.getItem('jf_tok') || '';
+let me = null;
+let role = 'jobseeker';
+let allJobs = [];
+let icColors = ['ic-blue','ic-green','ic-orange','ic-purple'];
+
+// ── API ──────────────────────────────────────────────────
+async function req(method, path, body) {
+  const h = {'Content-Type':'application/json'};
+  if (token) h['Authorization'] = 'Bearer ' + token;
+  const r = await fetch(API + path, {method, headers:h, body: body ? JSON.stringify(body) : undefined});
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(d.error || d.message || 'Сервер қатесі (' + r.status + ')');
+  return d;
+}
+
+// ── TOAST ────────────────────────────────────────────────
+function toast(msg, type='ok') {
+  const w = document.getElementById('toast-wrap');
+  const el = document.createElement('div');
+  el.className = 'toast t-' + type;
+  el.innerHTML = (type==='ok'?'✓ ':'✕ ') + msg;
+  w.appendChild(el);
+  setTimeout(() => el.style.opacity='0', 3000);
+  setTimeout(() => el.remove(), 3400);
+}
+
+// ── PAGE ROUTING ─────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  window.scrollTo(0, 0);
+  if (id === 'jobs') loadJobs();
+  else if (id === 'profile') { if (!me) { openAuth('login'); return; } loadProfilePage(); }
+  else if (id === 'employer') { if (!me) { openAuth('login'); return; } loadEmpJobs(); }
+  else if (id === 'notifications') { if (!me) { openAuth('login'); return; } loadNotifs(); }
+  else if (id === 'home') initHome();
+}
+
+// ── MODALS ───────────────────────────────────────────────
+function openAuth(form) {
+  document.getElementById('m-auth').classList.add('open');
+  sw(form);
+}
+function closeM(id) { document.getElementById('m-' + id).classList.remove('open'); }
+function sw(f) {
+  document.getElementById('f-login').style.display = f==='login'?'block':'none';
+  document.getElementById('f-reg').style.display = f==='register'?'block':'none';
+  document.getElementById('lerr').classList.remove('show');
+  document.getElementById('rerr').classList.remove('show');
+}
+function setRole(r) {
+  role = r;
+  document.getElementById('rt-js').classList.toggle('active', r==='jobseeker');
+  document.getElementById('rt-em').classList.toggle('active', r==='employer');
+}
+
+// ── AUTH ─────────────────────────────────────────────────
+async function doLogin() {
+  const btn = document.getElementById('l-btn');
+  const err = document.getElementById('lerr');
+  err.classList.remove('show');
+  const em = document.getElementById('l-em').value.trim();
+  const pw = document.getElementById('l-pw').value;
+  if (!em || !pw) { err.textContent = 'Email мен құпия сөзді енгізіңіз'; err.classList.add('show'); return; }
+  btn.innerHTML = '<span class="spinner"></span>Кіру...';
+  btn.disabled = true;
+  try {
+    const d = await req('POST', '/auth/login', {email: em, password: pw});
+    token = d.access_token;
+    localStorage.setItem('jf_tok', token);
+    me = d.user || d;
+    localStorage.setItem('jf_me', JSON.stringify(me));
+    setNavUser();
+    closeM('auth');
+    toast('Сәтті кірдіңіз!');
+    if (me.role === 'employer') showPage('employer');
+    else showPage('jobs');
+  } catch(e) {
+    err.textContent = e.message;
+    err.classList.add('show');
+  } finally {
+    btn.innerHTML = 'Кіру';
+    btn.disabled = false;
+  }
+}
+
+async function doReg() {
+  const btn = document.getElementById('r-btn');
+  const err = document.getElementById('rerr');
+  err.classList.remove('show');
+  const fn = document.getElementById('r-fn').value.trim();
+  const ln = document.getElementById('r-ln').value.trim();
+  const em = document.getElementById('r-em').value.trim();
+  const pw = document.getElementById('r-pw').value;
+  if (!fn) { err.textContent = 'Атыңызды енгізіңіз'; err.classList.add('show'); return; }
+  if (!ln) { err.textContent = 'Тегіңізді енгізіңіз'; err.classList.add('show'); return; }
+  if (!em) { err.textContent = 'Email енгізіңіз'; err.classList.add('show'); return; }
+  if (!em.includes('@')) { err.textContent = 'Email дұрыс емес'; err.classList.add('show'); return; }
+  if (pw.length < 8) { err.textContent = 'Құпия сөз кемінде 8 таңба болуы керек'; err.classList.add('show'); return; }
+  btn.innerHTML = '<span class="spinner"></span>Тіркелу...';
+  btn.disabled = true;
+  try {
+    await req('POST', '/auth/register', {email:em, password:pw, first_name:fn, last_name:ln, role});
+    toast('Тіркелдіңіз! Кіріңіз.');
+    document.getElementById('l-em').value = em;
+    document.getElementById('l-pw').value = '';
+    sw('login');
+  } catch(e) {
+    err.textContent = e.message;
+    err.classList.add('show');
+  } finally {
+    btn.innerHTML = 'Тіркелу';
+    btn.disabled = false;
+  }
+}
+
+function doLogout() {
+  token = ''; me = null;
+  localStorage.removeItem('jf_tok');
+  localStorage.removeItem('jf_me');
+  document.getElementById('nav-guest').style.display = 'flex';
+  document.getElementById('nav-user').style.display = 'none';
+  showPage('home');
+  toast('Шықтыңыз');
+}
+
+async function fetchMe() {
+  try {
+    const d = await req('GET', '/me');
+    me = d.user || d;
+    localStorage.setItem('jf_me', JSON.stringify(me));
+    setNavUser();
+  } catch(e) { token=''; localStorage.removeItem('jf_tok'); }
+}
+
+function setNavUser() {
+  if (!me) return;
+  document.getElementById('nav-guest').style.display = 'none';
+  document.getElementById('nav-user').style.display = 'flex';
+  const ini = ((me.first_name||'?')[0]+(me.last_name||'')[0]).toUpperCase();
+  document.getElementById('nav-av').textContent = ini;
+  document.getElementById('nav-emp-btn').style.display = me.role==='employer' ? '' : 'none';
+}
+
+// ── HOME ─────────────────────────────────────────────────
+async function initHome() {
+  try {
+    const d = await req('GET', '/jobs?page=1&limit=1');
+    document.getElementById('stat-total').textContent = d.total || d.jobs?.length || '—';
+  } catch(e){}
+  loadCats();
+}
+
+async function loadCats() {
+  try {
+    const d = await req('GET', '/jobs/categories');
+    const cats = d.categories || [];
+    const el = document.getElementById('cats-list');
+    if (!cats.length) { el.innerHTML = ''; return; }
+    el.innerHTML = cats.map(c =>
+      `<div class="cat-chip" onclick="searchBycat('${c}')">${c}</div>`
+    ).join('');
+  } catch(e) {
+    document.getElementById('cats-list').innerHTML = '';
+  }
+}
+
+function searchBycat(cat) {
+  showPage('jobs');
+  setTimeout(() => {
+    document.getElementById('fq').value = cat;
+    filterJobs();
+  }, 100);
+}
+
+function doSearch() {
+  const q = document.getElementById('h-q').value;
+  const loc = document.getElementById('h-loc').value;
+  const type = document.getElementById('h-type').value;
+  showPage('jobs');
+  setTimeout(async () => {
+    const grid = document.getElementById('jobs-grid');
+    grid.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
+    try {
+      let path = `/jobs/search?page=1&limit=50`;
+      if (q) path += `&q=${encodeURIComponent(q)}`;
+      if (loc) path += `&location=${encodeURIComponent(loc)}`;
+      if (type) path += `&job_type=${encodeURIComponent(type)}`;
+      const d = await req('GET', path);
+      allJobs = d.jobs || [];
+      renderJobs(allJobs);
+    } catch(e) {
+      grid.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><h3>${e.message}</h3></div>`;
+    }
+  }, 100);
+}
+
+// ── JOBS ─────────────────────────────────────────────────
+async function loadJobs() {
+  const grid = document.getElementById('jobs-grid');
+  grid.innerHTML = '<div class="loading"><span class="spinner"></span> Жүктелуде...</div>';
+  try {
+    const d = await req('GET', '/jobs?page=1&limit=50&status=active');
+    allJobs = d.jobs || [];
+    renderJobs(allJobs);
+  } catch(e) {
+    grid.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><h3>${e.message}</h3><p>API іске қосылғанын тексеріңіз</p></div>`;
+  }
+}
+
+function filterJobs() {
+  const q = (document.getElementById('fq').value||'').toLowerCase();
+  const type = document.getElementById('ftype').value;
+  const level = document.getElementById('flevel').value;
+  const filtered = allJobs.filter(j => {
+    const matchQ = !q || (j.title||'').toLowerCase().includes(q) || (j.category||'').toLowerCase().includes(q) || (j.location||'').toLowerCase().includes(q);
+    const matchT = !type || j.job_type === type;
+    const matchL = !level || j.experience_level === level;
+    return matchQ && matchT && matchL;
+  });
+  renderJobs(filtered);
+}
+
+function renderJobs(jobs) {
+  const grid = document.getElementById('jobs-grid');
+  document.getElementById('jobs-count').textContent = `(${jobs.length})`;
+  if (!jobs.length) {
+    grid.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><h3>Жұмыстар табылмады</h3><p>Басқа сөзбен іздеп көріңіз</p></div>';
+    return;
+  }
+  grid.innerHTML = jobs.map((j,i) => {
+    const ic = icColors[i % icColors.length];
+    const sal = j.salary_min && j.salary_max
+      ? `${fmtN(j.salary_min)} – ${fmtN(j.salary_max)} ${j.currency||'KZT'}`
+      : 'Жалақы белгіленбеген';
+    return `
+    <div class="job-card" onclick="openJobDetail(${i})">
+      <div class="jc-top">
+        <div class="jc-icon ${ic}">${(j.category||'J')[0].toUpperCase()}</div>
+        <div class="jc-meta">
+          <div class="jc-company">${j.category||'—'} · ${j.location||'—'}</div>
+          <div class="jc-title">${j.title||'—'}</div>
+        </div>
+      </div>
+      <div class="jc-tags">
+        <span class="tag tag-blue">${j.job_type||'—'}</span>
+        <span class="tag tag-green">${j.experience_level||'—'}</span>
+        ${j.location ? `<span class="tag tag-orange">${j.location}</span>` : ''}
+      </div>
+      <div class="jc-salary">${sal}</div>
+      <div class="jc-bottom">
+        <span class="jc-date">${fmtD(j.created_at)}</span>
+        <button class="apply-btn" onclick="event.stopPropagation();quickApply('${j.id}','${j.title}')">Өтініш беру</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openJobDetail(idx) {
+  const j = allJobs[idx];
+  if (!j) return;
+  const sal = j.salary_min && j.salary_max
+    ? `${fmtN(j.salary_min)} – ${fmtN(j.salary_max)} ${j.currency||'KZT'}`
+    : 'Жалақы белгіленбеген';
+  const canApply = me && me.role !== 'employer';
+  document.getElementById('job-detail').innerHTML = `
+    <div class="detail-header">
+      <div class="jc-tags" style="margin-bottom:0.6rem">
+        <span class="tag tag-blue">${j.job_type||'—'}</span>
+        <span class="tag tag-green">${j.experience_level||'—'}</span>
+      </div>
+      <div class="detail-title">${j.title}</div>
+      <div class="detail-meta">
+        <span>📍 ${j.location||'—'}</span>
+        <span>🗂 ${j.category||'—'}</span>
+        <span>📅 ${fmtD(j.created_at)}</span>
+      </div>
+      <div class="detail-salary">💰 ${sal}</div>
+    </div>
+    <div class="detail-desc">${j.description||'Сипаттама жоқ'}</div>
+    ${canApply
+      ? `<button class="btn btn-primary" style="width:100%;padding:0.75rem" onclick="quickApply('${j.id}','${j.title}')">Өтініш беру →</button>`
+      : (!me ? `<button class="btn btn-primary" style="width:100%;padding:0.75rem" onclick="closeM('job');openAuth('login')">Өтініш беру үшін кіріңіз</button>` : '<div style="text-align:center;color:var(--muted);font-size:0.85rem">Жұмыс берушілер өтініш бере алмайды</div>')}
+  `;
+  document.getElementById('m-job').classList.add('open');
+}
+
+async function quickApply(jobId, jobTitle) {
+  if (!me) { openAuth('login'); return; }
+  if (me.role === 'employer') { toast('Жұмыс берушілер өтініш бере алмайды', 'err'); return; }
+  try {
+    await req('POST', `/jobs/${jobId}/apply`, {cover_letter: 'Платформа арқылы өтініш берілді'});
+    toast(`"${jobTitle}" — өтініш жіберілді!`);
+    closeM('job');
+  } catch(e) { toast(e.message, 'err'); }
+}
+
+// ── PROFILE ──────────────────────────────────────────────
+async function loadProfilePage() {
+  if (!me) return;
+  document.getElementById('p-name').textContent = (me.first_name||'') + ' ' + (me.last_name||'');
+  document.getElementById('p-email').textContent = me.email||'';
+  document.getElementById('p-role').textContent = me.role==='employer' ? '🏢 Жұмыс беруші' : '👤 Жұмыс іздеуші';
+  const ini = ((me.first_name||'?')[0]+(me.last_name||'')[0]).toUpperCase();
+  document.getElementById('pav').textContent = ini;
+  document.getElementById('e-fn').value = me.first_name||'';
+  document.getElementById('e-ln').value = me.last_name||'';
+  try {
+    const d = await req('GET', '/me/profile');
+    const p = d.profile || d;
+    document.getElementById('e-bio').value = p.bio||'';
+    document.getElementById('e-skills').value = p.skills||'';
+    document.getElementById('e-loc').value = p.location||'';
+    document.getElementById('e-phone').value = p.phone||'';
+  } catch(e){}
+  loadMyApps();
+}
+
+async function saveBasic() {
+  try {
+    const d = await req('PUT', '/me', {first_name: document.getElementById('e-fn').value, last_name: document.getElementById('e-ln').value});
+    me.first_name = document.getElementById('e-fn').value;
+    me.last_name = document.getElementById('e-ln').value;
+    localStorage.setItem('jf_me', JSON.stringify(me));
+    setNavUser();
+    document.getElementById('p-name').textContent = me.first_name + ' ' + me.last_name;
+    document.getElementById('pav').textContent = (me.first_name[0]+me.last_name[0]).toUpperCase();
+    toast('Сақталды!');
+  } catch(e) { toast(e.message, 'err'); }
+}
+
+async function saveProfile() {
+  try {
+    await req('PUT', '/me/profile', {
+      bio: document.getElementById('e-bio').value,
+      skills: document.getElementById('e-skills').value,
+      location: document.getElementById('e-loc').value,
+      phone: document.getElementById('e-phone').value,
+    });
+    toast('Профиль жаңартылды!');
+  } catch(e) { toast(e.message, 'err'); }
+}
+
+async function savePass() {
+  const np = document.getElementById('np').value;
+  const np2 = document.getElementById('np2').value;
+  if (np.length < 8) { toast('Жаңа құпия сөз кемінде 8 таңба', 'err'); return; }
+  if (np !== np2) { toast('Құпия сөздер сәйкес емес', 'err'); return; }
+  try {
+    await req('PUT', '/me/password', {old_password: document.getElementById('op').value, new_password: np});
+    toast('Құпия сөз өзгертілді!');
+    document.getElementById('op').value=''; document.getElementById('np').value=''; document.getElementById('np2').value='';
+  } catch(e) { toast(e.message, 'err'); }
+}
+
+async function loadMyApps() {
+  const el = document.getElementById('my-apps');
+  try {
+    const d = await req('GET', '/me/applications');
+    const apps = d.applications || [];
+    if (!apps.length) { el.innerHTML = '<div class="empty" style="padding:1.5rem"><p>Өтініштер жоқ</p></div>'; return; }
+    el.innerHTML = apps.map(a => `
+      <div class="app-item">
+        <div><h4>${a.job_title||a.job_id||'Жұмыс'}</h4><p>${fmtD(a.applied_at||a.created_at)}</p></div>
+        <span class="status-badge s-${a.status||'pending'}">${sLbl(a.status)}</span>
+      </div>
+    `).join('');
+  } catch(e) { el.innerHTML = `<div class="empty" style="padding:1rem"><p>${e.message}</p></div>`; }
+}
+
+// ── EMPLOYER ─────────────────────────────────────────────
+function togglePF() {
+  document.getElementById('post-form').classList.toggle('open');
+}
+
+async function postJob() {
+  const title = document.getElementById('pj-title').value.trim();
+  const desc = document.getElementById('pj-desc').value.trim();
+  const loc = document.getElementById('pj-loc').value.trim();
+  if (!title) { toast('Жұмыс атауын енгізіңіз', 'err'); return; }
+  if (!desc) { toast('Сипаттама енгізіңіз', 'err'); return; }
+  if (!loc) { toast('Қаланы енгізіңіз', 'err'); return; }
+  try {
+    await req('POST', '/employer/jobs', {
+      title, description: desc, location: loc,
+      job_type: document.getElementById('pj-type').value,
+      category: document.getElementById('pj-cat').value || 'General',
+      experience_level: document.getElementById('pj-exp').value,
+      salary_min: parseFloat(document.getElementById('pj-smin').value)||0,
+      salary_max: parseFloat(document.getElementById('pj-smax').value)||0,
+      currency: 'KZT',
+    });
+    toast('Жұмыс жарияланды!');
+    document.getElementById('post-form').classList.remove('open');
+    ['pj-title','pj-desc','pj-loc','pj-cat','pj-smin','pj-smax'].forEach(id => document.getElementById(id).value='');
+    loadEmpJobs();
+  } catch(e) { toast(e.message, 'err'); }
+}
+
+async function loadEmpJobs() {
+  const el = document.getElementById('emp-jobs');
+  el.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
+  try {
+    const d = await req('GET', '/employer/jobs');
+    const jobs = d.jobs || [];
+    if (!jobs.length) {
+      el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><h3>Жарияланған жұмыстар жоқ</h3><p>"+ Жаңа жұмыс" батырмасын басыңыз</p></div>';
+      return;
+    }
+    el.innerHTML = jobs.map(j => `
+      <div class="emp-job">
+        <div class="emp-job-info">
+          <h4>${j.title}</h4>
+          <p>${j.location||'—'} · ${j.job_type||'—'} · ${fmtN(j.salary_min)}–${fmtN(j.salary_max)} KZT</p>
+        </div>
+        <div class="emp-actions">
+          <button class="btn-sm btn-green" onclick="viewApps('${j.id}','${j.title}')">Өтініштер</button>
+          <button class="btn-sm btn-danger" onclick="delJob('${j.id}')">Жою</button>
+        </div>
+      </div>
+    `).join('');
+  } catch(e) { el.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><h3>${e.message}</h3></div>`; }
+}
+
+async function delJob(id) {
+  if (!confirm('Жұмысты жойғыңыз келе ме?')) return;
+  try {
+    await req('DELETE', '/employer/jobs/' + id);
+    toast('Жойылды');
+    loadEmpJobs();
+  } catch(e) { toast(e.message, 'err'); }
+}
+
+async function viewApps(jobId, jobTitle) {
+  try {
+    const d = await req('GET', `/employer/jobs/${jobId}/applications`);
+    const apps = d.applications || [];
+    document.getElementById('job-detail').innerHTML = `
+      <div class="detail-title" style="margin-bottom:1.25rem">"${jobTitle}" — өтініштер <span style="font-size:0.9rem;color:var(--muted);font-weight:400">(${apps.length})</span></div>
+      ${apps.length ? apps.map(a => `
+        <div class="app-item" style="margin-bottom:0.6rem">
+          <div><h4>${a.applicant_name||a.applicant_id||'Өтінуші'}</h4><p>${a.cover_letter||''}</p></div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem">
+            <span class="status-badge s-${a.status||'pending'}">${sLbl(a.status)}</span>
+            <div style="display:flex;gap:0.4rem">
+              <button class="btn-sm btn-green" onclick="updApp('${a.id}','accepted')">✓ Қабылдау</button>
+              <button class="btn-sm btn-danger" onclick="updApp('${a.id}','rejected')">✕ Бас тарту</button>
+            </div>
+          </div>
+        </div>
+      `).join('') : '<div class="empty" style="padding:2rem"><p>Өтініштер жоқ</p></div>'}
+    `;
+    document.getElementById('m-job').classList.add('open');
+  } catch(e) { toast(e.message, 'err'); }
+}
+
+async function updApp(id, status) {
+  try {
+    await req('PUT', '/employer/applications/' + id + '/status', {status});
+    toast('Мәртебе жаңартылды: ' + sLbl(status));
+    closeM('job');
+  } catch(e) { toast(e.message, 'err'); }
+}
+
+// ── NOTIFICATIONS ─────────────────────────────────────────
+async function loadNotifs() {
+  const el = document.getElementById('notif-list');
+  el.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
+  try {
+    const d = await req('GET', '/notifications?page=1&limit=30');
+    const notifs = d.notifications || [];
+    if (!notifs.length) {
+      el.innerHTML = '<div class="empty"><div class="empty-icon">🔔</div><h3>Хабарламалар жоқ</h3></div>';
+      return;
+    }
+    el.innerHTML = notifs.map(n => `
+      <div class="notif-item ${!n.read_at?'unread':''}" onclick="markRead('${n.id}',this)">
+        ${!n.read_at ? '<div class="ndot"></div>' : '<div style="width:9px"></div>'}
+        <div class="notif-body">
+          <h4>${n.title||n.type||'Хабарлама'}</h4>
+          <p>${n.message||n.body||''}</p>
+        </div>
+        <div class="notif-time">${fmtD(n.created_at)}</div>
+      </div>
+    `).join('');
+    // unread count
+    try {
+      const uc = await req('GET', '/notifications/unread-count');
+      document.getElementById('notif-badge').style.display = (uc.count||0) > 0 ? 'block' : 'none';
+    } catch(e){}
+  } catch(e) { el.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><h3>${e.message}</h3></div>`; }
+}
+
+async function markRead(id, el) {
+  try {
+    await req('PUT', '/notifications/' + id + '/read');
+    el.classList.remove('unread');
+    el.querySelector('.ndot')?.remove();
+  } catch(e){}
+}
+
+function markAll() {
+  document.querySelectorAll('.notif-item.unread').forEach(el => {
+    const m = el.getAttribute('onclick')?.match(/'([^']+)'/);
+    if (m) req('PUT', '/notifications/'+m[1]+'/read').catch(()=>{});
+    el.classList.remove('unread');
+    el.querySelector('.ndot')?.remove();
+  });
+  document.getElementById('notif-badge').style.display = 'none';
+  toast('Барлығы оқылды деп белгіленді');
+}
+
+// ── UTILS ─────────────────────────────────────────────────
+function fmtN(n) {
+  if (!n && n !== 0) return '0';
+  return Number(n).toLocaleString('ru-RU');
+}
+function fmtD(s) {
+  if (!s) return '—';
+  try {
+    return new Date(s).toLocaleDateString('ru-RU', {day:'2-digit', month:'short', year:'numeric'});
+  } catch(e) { return '—'; }
+}
+function sLbl(s) {
+  return {pending:'Күтуде', reviewed:'Қаралуда', accepted:'Қабылданды', rejected:'Бас тартылды'}[s] || 'Күтуде';
+}
+
+// ── INIT ─────────────────────────────────────────────────
+(async function() {
+  const saved = localStorage.getItem('jf_me');
+  if (saved) { try { me = JSON.parse(saved); } catch(e){} }
+  if (token) {
+    await fetchMe();
+  } else if (me) {
+    setNavUser();
+  }
+  initHome();
+})();
+
+// Close modal on backdrop click
+document.querySelectorAll('.modal-bg').forEach(bg => {
+  bg.addEventListener('click', e => { if (e.target === bg) bg.classList.remove('open'); });
+});
+</script>
+</body>
+</html>

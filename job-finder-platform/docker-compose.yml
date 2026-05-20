@@ -1,0 +1,289 @@
+version: '3.8'
+
+services:
+  # ── Databases ────────────────────────────────────────────────────────────
+  postgres-user:
+    image: postgres:15-alpine
+    container_name: postgres-user
+    environment:
+      POSTGRES_DB: userdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_user_data:/var/lib/postgresql/data
+    networks:
+      - jobfinder
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-job:
+    image: postgres:15-alpine
+    container_name: postgres-job
+    environment:
+      POSTGRES_DB: jobdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_job_data:/var/lib/postgresql/data
+    networks:
+      - jobfinder
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-notification:
+    image: postgres:15-alpine
+    container_name: postgres-notification
+    environment:
+      POSTGRES_DB: notificationdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_notification_data:/var/lib/postgresql/data
+    networks:
+      - jobfinder
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Cache ─────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - jobfinder
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Message Queue ─────────────────────────────────────────────────────────
+  nats:
+    image: nats:2.10-alpine
+    container_name: nats
+    command: ["--jetstream", "--http_port", "8222"]
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    networks:
+      - jobfinder
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8222/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Microservices ─────────────────────────────────────────────────────────
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    container_name: user-service
+    environment:
+      DB_HOST: postgres-user
+      DB_PORT: "5432"
+      DB_USER: postgres
+      DB_PASSWORD: postgres123
+      DB_NAME: userdb
+      REDIS_HOST: redis:6379
+      NATS_URL: nats://nats:4222
+      GRPC_PORT: "50051"
+      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key-minimum-32-chars-long}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      APP_ENV: production
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3001}
+    ports:
+      - "50051:50051"
+      - "9091:9091"
+    depends_on:
+      postgres-user:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+    networks:
+      - jobfinder
+    restart: unless-stopped
+
+  job-service:
+    build:
+      context: ./job-service
+      dockerfile: Dockerfile
+    container_name: job-service
+    environment:
+      DB_HOST: postgres-job
+      DB_PORT: "5432"
+      DB_USER: postgres
+      DB_PASSWORD: postgres123
+      DB_NAME: jobdb
+      REDIS_HOST: redis:6379
+      NATS_URL: nats://nats:4222
+      GRPC_PORT: "50052"
+      APP_ENV: production
+    ports:
+      - "50052:50052"
+      - "9092:9092"
+    depends_on:
+      postgres-job:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+    networks:
+      - jobfinder
+    restart: unless-stopped
+
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    container_name: notification-service
+    environment:
+      DB_HOST: postgres-notification
+      DB_PORT: "5432"
+      DB_USER: postgres
+      DB_PASSWORD: postgres123
+      DB_NAME: notificationdb
+      NATS_URL: nats://nats:4222
+      GRPC_PORT: "50053"
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      FROM_EMAIL: ${FROM_EMAIL:-noreply@jobfinder.com}
+      APP_ENV: production
+    ports:
+      - "50053:50053"
+      - "9093:9093"
+    depends_on:
+      postgres-notification:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+    networks:
+      - jobfinder
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    environment:
+      HTTP_PORT: "8080"
+      USER_SERVICE_ADDR: user-service:50051
+      JOB_SERVICE_ADDR: job-service:50052
+      NOTIFICATION_SERVICE_ADDR: notification-service:50053
+      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key-minimum-32-chars-long}
+      REDIS_HOST: redis:6379
+      APP_ENV: production
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-service
+      - job-service
+      - notification-service
+    networks:
+      - jobfinder
+    restart: unless-stopped
+
+  # ── Observability ─────────────────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: prometheus
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - jobfinder
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - jobfinder
+    restart: unless-stopped
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.50
+    container_name: jaeger
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+      - "4317:4317"
+    networks:
+      - jobfinder
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./docker/loki/loki-config.yml:/etc/loki/local-config.yaml
+    networks:
+      - jobfinder
+    restart: unless-stopped
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    container_name: promtail
+    volumes:
+      - /var/log:/var/log:ro
+      - ./docker/promtail/promtail-config.yml:/etc/promtail/config.yml
+    depends_on:
+      - loki
+    networks:
+      - jobfinder
+    restart: unless-stopped
+
+volumes:
+  postgres_user_data:
+  postgres_job_data:
+  postgres_notification_data:
+  redis_data:
+  grafana_data:
+
+networks:
+  jobfinder:
+    driver: bridge
